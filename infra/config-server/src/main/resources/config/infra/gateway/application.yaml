@@ -1,0 +1,38 @@
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: admin_main_service_route
+          uri: lb://main-service
+          predicates:
+            - Path=/admin/**
+
+        - id: users_main_service_route
+          uri: lb://main-service
+          predicates:
+            - Path=/users/**
+
+        - id: categories_main_service_route
+          uri: lb://main-service
+          predicates:
+            - Path=/categories/**
+
+        - id: events_main_service_route
+          uri: lb://main-service
+          predicates:
+            - Path=/events/**
+
+        - id: compilations_main_service_route
+          uri: lb://main-service
+          predicates:
+            - Path=/compilations/**
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web: DEBUG
+    reactor.netty.http.server: DEBUG

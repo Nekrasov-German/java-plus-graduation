@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: main-service
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      fail-fast: true
+      discovery:
+        enabled: true
+        serviceId: config-server
+      retry:
+        useRandomPolicy: true
+        initial-interval: 2000
+        max-interval: 6000
+
+server:
+  port: 0
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    ip-address: ${SPRING_APP_IP:127.0.0.1}
+    hostname: ${SPRING_APP_HOST:localhost}

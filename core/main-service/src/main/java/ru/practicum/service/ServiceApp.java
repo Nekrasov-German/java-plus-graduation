@@ -2,7 +2,7 @@ package ru.practicum.service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
@@ -11,8 +11,9 @@ import org.springframework.context.annotation.ComponentScan;
         "ru.practicum.client",
         "ru.practicum.dto"
 })
+@EnableFeignClients(basePackages = "ru.practicum.client")
 public class ServiceApp {
     public static void main(String[] args) {
-        ConfigurableApplicationContext context = SpringApplication.run(ServiceApp.class, args);
+        SpringApplication.run(ServiceApp.class, args);
     }
 }
