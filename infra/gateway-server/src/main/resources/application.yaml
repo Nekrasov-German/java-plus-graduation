@@ -19,7 +19,12 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
-  instance:
-    prefer-ip-address: true
-    ip-address: ${SPRING_APP_IP:127.0.0.1}
-    hostname: ${SPRING_APP_HOST:localhost}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, gateway
+  endpoint:
+    gateway:
+      enabled: true
+      show-details: always
