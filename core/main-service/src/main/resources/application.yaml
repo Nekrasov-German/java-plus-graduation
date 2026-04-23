@@ -14,7 +14,7 @@ spring:
         serviceId: config-server
 
 server:
-  port: 0
+  port: 8080
 eureka:
   client:
     serviceUrl:
