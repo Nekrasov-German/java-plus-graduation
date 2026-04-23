@@ -19,6 +19,12 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+  instance:
+    preferIpAddress: true
+    hostname: localhost
+    instance-id: "${spring.application.name}:${random.value}"
+    leaseRenewalIntervalInSeconds: 10
+
 management:
   endpoints:
     web:
@@ -28,6 +34,3 @@ management:
     gateway:
       enabled: true
       show-details: always
-  server:
-    servlet:
-      context-path: /actuator
