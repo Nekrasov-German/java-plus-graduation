@@ -32,7 +32,3 @@ management:
     web:
       exposure:
         include: health, info, gateway
-  endpoint:
-    gateway:
-      enabled: true
-      show-details: always
