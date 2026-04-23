@@ -14,7 +14,7 @@ spring:
         max-interval: 6000
 
 server:
-  port: 8080
+  port: 0
 eureka:
   client:
     register-with-eureka: true
