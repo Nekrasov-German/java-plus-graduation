@@ -36,3 +36,13 @@ logging:
     org.springframework.cloud.gateway: DEBUG
     org.springframework.web: DEBUG
     reactor.netty.http.server: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, gateway
+  endpoint:
+    gateway:
+      enabled: true
+      show-details: always
