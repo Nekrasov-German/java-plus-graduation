@@ -28,3 +28,6 @@ management:
     gateway:
       enabled: true
       show-details: always
+  server:
+    servlet:
+      context-path: /actuator
