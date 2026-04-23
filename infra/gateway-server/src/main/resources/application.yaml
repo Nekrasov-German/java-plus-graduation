@@ -20,15 +20,8 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
   instance:
-    appname: ${spring.application.name}
     preferIpAddress: true
     hostname: localhost
     instance-id: "${spring.application.name}:${random.value}"
     registry-fetch-interval-seconds: 10
     leaseRenewalIntervalInSeconds: 10
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health, info, gateway
