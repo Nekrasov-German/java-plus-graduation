@@ -6,10 +6,30 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        - id: main_service_route
+        - id: admin_main_service_route
           uri: lb://main-service
           predicates:
-            - Path=/**
+            - Path=/admin/**
+
+        - id: users_main_service_route
+          uri: lb://main-service
+          predicates:
+            - Path=/users/**
+
+        - id: categories_main_service_route
+          uri: lb://main-service
+          predicates:
+            - Path=/categories/**
+
+        - id: events_main_service_route
+          uri: lb://main-service
+          predicates:
+            - Path=/events/**
+
+        - id: compilations_main_service_route
+          uri: lb://main-service
+          predicates:
+            - Path=/compilations/**
 
 logging:
   level:
