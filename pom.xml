@@ -14,7 +14,8 @@
 	<modules>
 		<module>core</module>
 		<module>stats</module>
-	</modules>
+        <module>infra</module>
+    </modules>
 
 	<groupId>ru.practicum</groupId>
 	<artifactId>explore-with-me</artifactId>
@@ -22,9 +23,23 @@
 	<packaging>pom</packaging>
 
 	<properties>
+		<slf4j.version>2.0.12</slf4j.version>
 		<java.version>21</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring-cloud-dependencies.version>2023.0.3</spring-cloud-dependencies.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud-dependencies.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<pluginManagement>
@@ -36,6 +51,24 @@
 						<systemPropertyVariables>
 							<spring.profiles.active>test</spring.profiles.active>
 						</systemPropertyVariables>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.11.0</version>
+					<configuration>
+						<annotationProcessorPaths>
+							<path>
+								<groupId>org.projectlombok</groupId>
+								<artifactId>lombok</artifactId>
+								<version>1.18.34</version>
+							</path>
+						</annotationProcessorPaths>
 					</configuration>
 				</plugin>
 				<plugin>

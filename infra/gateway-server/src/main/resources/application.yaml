@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: gateway
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: config-server
+      retry:
+        useRandomPolicy: true
+        initial-interval: 2000
+        max-interval: 6000
+
+server:
+  port: 8081
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    preferIpAddress: true
+    hostname: localhost
+    instance-id: "${spring.application.name}:${random.value}"
+    registry-fetch-interval-seconds: 10
+    leaseRenewalIntervalInSeconds: 10
