@@ -12,13 +12,14 @@ import ru.practicum.service.dal.EventRepository;
 import ru.practicum.service.error.ConflictException;
 import ru.practicum.service.error.NotFoundException;
 import ru.practicum.service.mapper.CompilationMapper;
+import ru.practicum.service.mapper.EventMapper;
 import ru.practicum.service.model.Compilation;
 import ru.practicum.service.model.Event;
-import ru.practicum.service.statistics.StatisticsService;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,6 @@ import java.util.Set;
 public class AdminCompilationServiceImpl implements AdminCompilationService {
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
-    private final StatisticsService  statisticsService;
 
     @Override
     public CompilationDto createCompilation(NewCompilationDto dto) {
@@ -43,7 +43,9 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
             if (events.size() != dto.getEventsIds().size()) {
                 throw new NotFoundException("Некоторые события не были найдены.");
             }
-            eventShortDtos = statisticsService.getEventShortDto(events, false);
+            eventShortDtos = events.stream()
+                    .map(EventMapper::toEventShortDto)
+                    .collect(Collectors.toSet());
             compilation.setEvents(events);
         }
 
@@ -94,7 +96,9 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
         Compilation savedCompilation = compilationRepository.save(compilation);
 
         Set<EventShortDto> eventShortDtos = events != null && !events.isEmpty()
-                ? statisticsService.getEventShortDto(events, false)
+                ? events.stream()
+                .map(EventMapper::toEventShortDto)
+                .collect(Collectors.toSet())
                 : Collections.emptySet();
 
         return CompilationMapper.toCompilationDto(savedCompilation, eventShortDtos);
