@@ -13,6 +13,6 @@ public interface AnalyzerService {
 
     Iterator<RecommendedEventProto> getSimilarEvents(SimilarEventsRequestProto request);
 
-    Iterator<RecommendedEventProto> getInteractionCount(InteractionsCountRequestProto request);
+    Iterator<RecommendedEventProto> getInteractionsCount(InteractionsCountRequestProto request);
 
 }

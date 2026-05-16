@@ -1,3 +1,7 @@
+grpc:
+  server:
+    port: 0
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:6543/analyzer
@@ -20,8 +24,3 @@ spring:
       group-id: analyzer-consumer-group
       auto-offset-reset: earliest
       enable-auto-commit: false
-
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

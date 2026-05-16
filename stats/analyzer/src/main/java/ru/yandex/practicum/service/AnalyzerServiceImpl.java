@@ -82,7 +82,7 @@ public class AnalyzerServiceImpl implements AnalyzerService {
                 }
             }
 
-            recommendations.sort((a, b) -> Float.compare(b.getScore(), a.getScore()));
+            recommendations.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
             if (recommendations.size() > maxResults) {
                 recommendations = recommendations.subList(0, maxResults);
             }
@@ -184,7 +184,7 @@ public class AnalyzerServiceImpl implements AnalyzerService {
                     userId, eventId, e);
         }
 
-        similarEvents.sort((a, b) -> Float.compare(b.getScore(), a.getScore()));
+        similarEvents.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
         if (similarEvents.size() > maxResults) {
             similarEvents = similarEvents.subList(0, maxResults);
         }
@@ -193,22 +193,50 @@ public class AnalyzerServiceImpl implements AnalyzerService {
     }
 
     @Override
-    public Iterator<RecommendedEventProto> getInteractionCount(InteractionsCountRequestProto request) {
-        log.info("Вызов метода getInteractionCount с запросом {}", request);
+    public Iterator<RecommendedEventProto> getInteractionsCount(InteractionsCountRequestProto request) {
+        log.info("Вызов метода getInteractionsCount с запросом {}", request);
+
         List<Long> eventIds = request.getEventIdList();
+        log.info("Список ID мероприятий: {}", eventIds);
 
-        List<RecommendedEventProto> interactionStats = new ArrayList<>();
-        for (Long eventId : eventIds) {
+        List<Interaction> allInteractions = interactionRepository.findAllByEventIdIn(eventIds);
+        log.debug("Получено {} взаимодействий для обработки", allInteractions.size());
 
-            float interactionCount = interactionRepository.getTotalRatingByEventId(eventId);
+        List<RecommendedEventProto> interactionStats = eventIds.stream()
+                .map(eventId -> {
+                    try {
+                        log.debug("Обработка eventId {}", eventId);
 
-            RecommendedEventProto event = RecommendedEventProto.newBuilder()
-                    .setEventId(eventId)
-                    .setScore(interactionCount)
-                    .build();
-            interactionStats.add(event);
-        }
+                        List<Interaction> eventInteractions = allInteractions.stream()
+                                .filter(interaction -> interaction.getEventId().equals(eventId))
+                                .collect(Collectors.toList());
+                        log.debug("Для eventId {} найдено {} взаимодействий", eventId, eventInteractions.size());
 
+                        Map<Long, Double> maxUserRating = eventInteractions.stream()
+                                .collect(Collectors.toMap(
+                                        Interaction::getUserId,
+                                        interaction -> interaction.getRating().doubleValue(),
+                                        (existing, replacement) -> Math.max(existing, replacement)
+                                ));
+
+                        double sumOfMaxRatings = maxUserRating.values().stream()
+                                .mapToDouble(Double::doubleValue)
+                                .sum();
+                        log.info("Для eventId {} сумма максимальных рейтингов: {}", eventId, sumOfMaxRatings);
+
+                        return RecommendedEventProto.newBuilder()
+                                .setEventId(eventId)
+                                .setScore(sumOfMaxRatings)
+                                .build();
+                    } catch (Exception e) {
+                        log.error("Ошибка при обработке eventId {}: {}", eventId, e.getMessage(), e);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        log.info("Сформировано {} объектов RecommendedEventProto", interactionStats.size());
         return interactionStats.iterator();
     }
 }

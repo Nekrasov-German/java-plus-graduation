@@ -95,6 +95,14 @@ public class PublicEventServiceImpl implements PublicEventService {
                 });
 
         Double views = 0.0;
+        try {
+            Stream<RecommendedEventProto> recommendationStream =
+                    analyzerClient.getInteractionsCount(List.of(event.getId()));
+            float rating = (float) recommendationStream.findFirst().get().getScore();
+            views += rating;
+        } catch (RuntimeException e) {
+            log.info("Ошибка получения рейтинга мероприятия");
+        }
 		return EventMapper.toEventFullDto(event, views, user);
     }
 

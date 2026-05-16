@@ -15,7 +15,7 @@ import java.util.stream.StreamSupport;
 public class AnalyzerClient {
 
     @GrpcClient("analyzer")
-    private RecommendationControllerGrpc.RecommendationControllerBlockingStub blockingStub;
+    private RecommendationsControllerGrpc.RecommendationsControllerBlockingStub blockingStub;
 
     public Stream<RecommendedEventProto> getRecommendationForUser(long userId, int maxResults) {
         UserRecommendationsRequestProto request = UserRecommendationsRequestProto.newBuilder()

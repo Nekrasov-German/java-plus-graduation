@@ -12,7 +12,7 @@ import java.util.Iterator;
 
 @GrpcService
 @RequiredArgsConstructor
-public class AnalyzerController extends RecommendationControllerGrpc.RecommendationControllerImplBase {
+public class AnalyzerController extends RecommendationsControllerGrpc.RecommendationsControllerImplBase {
     private final AnalyzerService analyzerService;
 
     @Override
@@ -56,7 +56,7 @@ public class AnalyzerController extends RecommendationControllerGrpc.Recommendat
     @Override
     public void getInteractionsCount(InteractionsCountRequestProto request, StreamObserver<RecommendedEventProto> responseObserver) {
         try {
-            Iterator<RecommendedEventProto> iterator = analyzerService.getInteractionCount(request);
+            Iterator<RecommendedEventProto> iterator = analyzerService.getInteractionsCount(request);
 
             while (iterator.hasNext()) {
                 RecommendedEventProto event = iterator.next();

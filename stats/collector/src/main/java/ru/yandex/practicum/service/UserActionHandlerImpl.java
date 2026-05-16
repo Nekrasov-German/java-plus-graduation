@@ -27,7 +27,7 @@ public class UserActionHandlerImpl implements UserActionHandler {
         try {
             UserActionAvro avroMessage = MapperUserAction.userActionProtoToUserActionAvro(request);
             producer.sendMessage(TOPIC_ACTION, avroMessage);
-            log.debug("Сообщение отправлено в топик: {}", TOPIC_ACTION);
+            log.info("Сообщение отправлено в топик: {}", TOPIC_ACTION);
         } catch (Exception e) {
             log.error("Ошибка отправки в Kafka для запроса: {}", request, e);
         }
