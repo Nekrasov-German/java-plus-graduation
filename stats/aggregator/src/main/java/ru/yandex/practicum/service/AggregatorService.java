@@ -6,6 +6,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
+import ru.yandex.practicum.util.ActionUser;
 import ru.yandex.practicum.util.AggregatorProducer;
 
 import java.time.Instant;
@@ -17,9 +18,6 @@ import java.util.*;
 public class AggregatorService {
     private final static String TOPIC_ACTION = "stats.user-actions.v1";
     private final static String TOPIC_SIMILARITY = "stats.events-similarity.v1";
-    private final static double VIEW = 0.4;
-    private final static double REGISTER = 0.8;
-    private final static double LIKE = 1;
 
     private final AggregatorProducer producer;
 
@@ -60,19 +58,11 @@ public class AggregatorService {
     }
 
     private double getWeight(UserActionAvro action) {
-        switch (action.getActionType().toString()) {
-            case "VIEW" -> {
-                return VIEW;
-            }
-            case "REGISTER" -> {
-                return REGISTER;
-            }
-            case "LIKE" -> {
-                return LIKE;
-            }
-            default -> {
-                return 0;
-            }
+        try {
+            ActionUser interactionType = ActionUser.valueOf(action.getActionType().toString());
+            return interactionType.getWeight();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Неизвестный тип взаимодействия: " + action.getActionType().toString());
         }
     }
 

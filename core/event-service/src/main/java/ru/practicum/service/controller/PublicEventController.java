@@ -21,6 +21,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j
 public class PublicEventController {
+    private static final String HEADER_USER_ID = "X-EWM-USER-ID";
     final PublicEventService publicEventService;
 
     @GetMapping
@@ -46,19 +47,19 @@ public class PublicEventController {
 
     @GetMapping("/{id}")
     public EventFullDto getEventById(@PathVariable(value = "id") Long id, HttpServletRequest request,
-                                     @RequestHeader("X-EWM-USER-ID") long userId) {
+                                     @RequestHeader(HEADER_USER_ID) long userId) {
         log.info("PublicEventController: вызов эндпоинта GET events/{}", id);
         return publicEventService.getById(id, request, userId);
     }
 
     @GetMapping("/recommendations")
-    public List<EventShortDto> getRecommendationEvents(@RequestHeader("X-EWM-USER-ID") long userId) {
+    public List<EventShortDto> getRecommendationEvents(@RequestHeader(HEADER_USER_ID) long userId) {
         return publicEventService.getRecommendationEvent(userId);
     }
 
     @PutMapping("/{eventId}/like")
     public ResponseEntity<Void> likeEvent(@PathVariable(value = "eventId") Long eventId,
-                                          @RequestHeader("X-EWM-USER-ID") long userId) {
+                                          @RequestHeader(HEADER_USER_ID) long userId) {
         publicEventService.likeEvent(eventId, userId);
         return ResponseEntity.ok().body(null);
     }

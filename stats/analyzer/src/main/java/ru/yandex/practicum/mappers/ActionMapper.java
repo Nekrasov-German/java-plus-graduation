@@ -6,9 +6,6 @@ import ru.yandex.practicum.models.Interaction;
 
 @UtilityClass
 public class ActionMapper {
-    private final float VIEW = 0.4F;
-    private final float REGISTER = 0.8F;
-    private final float LIKE = 1.0F;
 
     public Interaction mapUserActionAvroToInteraction(UserActionAvro userAction) {
         return Interaction.builder()
@@ -20,19 +17,11 @@ public class ActionMapper {
     }
 
     private Float getRating(String actionType) {
-        switch (actionType) {
-            case "VIEW" -> {
-                return VIEW;
-            }
-            case "REGISTER" -> {
-                return REGISTER;
-            }
-            case "LIKE" -> {
-                return LIKE;
-            }
-            default -> {
-                return 0.0F;
-            }
+        try {
+            ActionUser actionUser = ActionUser.valueOf(actionType);
+            return actionUser.getWeight();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Неизвестный тип взаимодействия: " + actionType);
         }
     }
 }
