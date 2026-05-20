@@ -6,15 +6,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.client.AnalyzerClient;
 import ru.practicum.interaction.dto.EventFullDto;
 import ru.practicum.interaction.dto.UpdateEventAdminRequest;
 import ru.practicum.interaction.dto.UserShortDto;
 import ru.practicum.interaction.dto.enums.AdminStateAction;
+import ru.practicum.interaction.dto.enums.State;
 import ru.practicum.interaction.user_client.UserClient;
-import ru.practicum.service.dto.AdminEventParam;
 import ru.practicum.service.dal.CategoryRepository;
 import ru.practicum.service.dal.EventRepository;
-import ru.practicum.service.statistics.StatisticsService;
+import ru.practicum.service.dto.AdminEventParam;
 import ru.practicum.service.error.ConflictException;
 import ru.practicum.service.error.NotFoundException;
 import ru.practicum.service.error.ValidationException;
@@ -22,11 +23,9 @@ import ru.practicum.service.mapper.EventMapper;
 import ru.practicum.service.model.Category;
 import ru.practicum.service.model.Event;
 import ru.practicum.service.model.Location;
-import ru.practicum.interaction.dto.enums.State;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,8 +33,8 @@ import java.util.Map;
 public class AdminEventServiceImpl implements AdminEventService {
     private final EventRepository eventRepository;
     private final UserClient userClient;
+    private final AnalyzerClient analyzerClient;
     private final CategoryRepository categoryRepository;
-    private final StatisticsService  statisticsService;
 
     private static final String URI_EVENT_ENDPOINT = "/events/";
 
@@ -59,11 +58,9 @@ public class AdminEventServiceImpl implements AdminEventService {
                 .map(event -> URI_EVENT_ENDPOINT + event.getId())
                 .toList();
 
-        Map<String, Long> eventHits = statisticsService.getViewsByUris(uris, false);
-
         return events.stream()
                 .map(event -> {
-                    Long views = eventHits.getOrDefault(URI_EVENT_ENDPOINT + event.getId(), 0L);
+                    Double views = 0.0;
                     UserShortDto user;
                     try {
                         user = userClient.getShortUser(event.getInitiator());
@@ -123,8 +120,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         updateEventFields(event, request);
         Event updatedEvent = eventRepository.save(event);
 
-        String uri = URI_EVENT_ENDPOINT + event.getId();
-        Long views = statisticsService.getViewsByUri(uri,false);
+        Double views = 0.0;
 
         return EventMapper.toEventFullDto(updatedEvent, views, user);
     }

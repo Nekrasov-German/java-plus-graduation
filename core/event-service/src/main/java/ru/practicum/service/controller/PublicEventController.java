@@ -6,10 +6,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.interaction.dto.EventFullDto;
 import ru.practicum.interaction.dto.EventSearchParams;
 import ru.practicum.interaction.dto.EventShortDto;
@@ -23,6 +21,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j
 public class PublicEventController {
+    private static final String HEADER_USER_ID = "X-EWM-USER-ID";
     final PublicEventService publicEventService;
 
     @GetMapping
@@ -47,9 +46,21 @@ public class PublicEventController {
     }
 
     @GetMapping("/{id}")
-    public EventFullDto getEventById(@PathVariable(value = "id") Long id, HttpServletRequest request) {
+    public EventFullDto getEventById(@PathVariable(value = "id") Long id, HttpServletRequest request,
+                                     @RequestHeader(HEADER_USER_ID) long userId) {
         log.info("PublicEventController: вызов эндпоинта GET events/{}", id);
+        return publicEventService.getById(id, request, userId);
+    }
 
-        return publicEventService.getById(id, request);
+    @GetMapping("/recommendations")
+    public List<EventShortDto> getRecommendationEvents(@RequestHeader(HEADER_USER_ID) long userId) {
+        return publicEventService.getRecommendationEvent(userId);
+    }
+
+    @PutMapping("/{eventId}/like")
+    public ResponseEntity<Void> likeEvent(@PathVariable(value = "eventId") Long eventId,
+                                          @RequestHeader(HEADER_USER_ID) long userId) {
+        publicEventService.likeEvent(eventId, userId);
+        return ResponseEntity.ok().body(null);
     }
 }

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.client.CollectorClient;
 import ru.practicum.interaction.dto.*;
 import ru.practicum.interaction.dto.enums.State;
 import ru.practicum.interaction.dto.enums.Status;
@@ -27,9 +28,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PrivateRequestServiceImpl implements PrivateRequestService {
+    private static final String REGISTER = "REGISTER";
+
     private static final Logger log = LoggerFactory.getLogger(PrivateRequestServiceImpl.class);
     private final UserClient userClient;
     private final EventClient eventClient;
+    private final CollectorClient client;
     private final RequestRepository requestRepository;
 
     @Override
@@ -231,6 +235,12 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
                 throw new ConflictException("Не удалось обновить событие. " + e);
             }
         }
+
+        client.sendUserAction(userId, eventId, REGISTER)
+                .exceptionally(ex -> {
+                    log.warn("Асинхронная отправка статистики не удалась", ex);
+                    return false;
+                });
 
         return RequestMapper.toRequestDto(requestRepository.save(request));
 
